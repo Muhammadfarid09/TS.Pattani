@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>สต๊อกสินค้าและอุปกรณ์ - T.S. Pattani</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           UI Clean & Minimalist (HCI Standard)
+           ========================================= */
+        body { background-color: #f4f6f9; color: #333333; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .sidebar { background: #ffffff; border-right: 1px solid #e5e7eb; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar .brand { color: #1e3a8a !important; }
+        .nav-item { color: #6b7280; font-weight: 500; transition: 0.2s; }
+        .nav-item:hover:not(.active) { background: #f3f4f6; color: #111827; }
+        .nav-item.active { background: #eff6ff; border-left: 4px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+
+        .clean-card {
+            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        /* ตารางสต๊อก */
+        .table-clean { vertical-align: middle; margin-bottom: 0; }
+        .table-clean thead th { 
+            background: #f9fafb; color: #6b7280; border-bottom: 2px solid #e5e7eb; 
+            border-top: none; font-weight: 600; padding: 12px 20px; font-size: 0.85rem;
+        }
+        .table-clean tbody td { border-bottom: 1px solid #e5e7eb; padding: 16px 20px; color: #111827; }
+        .table-clean tbody tr:hover td { background: #f9fafb; }
+        .table-clean tbody tr:last-child td { border-bottom: none; }
+
+        /* รูปขนาดย่อในตาราง */
+        .item-thumb {
+            width: 50px; height: 50px; border-radius: 8px; object-fit: cover;
+            background: #f3f4f6; border: 1px solid #e5e7eb;
+        }
+
+        /* ปุ่มบวก/ลบสต๊อก (Quick Actions) */
+        .qty-controls {
+            display: inline-flex; align-items: center; background: #f9fafb;
+            border-radius: 30px; padding: 4px; border: 1px solid #e5e7eb; transition: 0.3s;
+        }
+        .qty-btn {
+            background: transparent; border: none; color: #6b7280; width: 28px; height: 28px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; font-size: 0.8rem; cursor: pointer;
+        }
+        .qty-btn:hover { background: #e5e7eb; color: #111827; }
+        .qty-input {
+            width: 40px; text-align: center; background: transparent; border: none;
+            color: #111827; font-weight: bold; font-size: 1rem; pointer-events: none;
+        }
+
+        /* ป้ายเตือนและสีไฮไลท์สต๊อก (Soft Colors) */
+        .stock-warning td { background-color: #fffbeb !important; }
+        .stock-warning .qty-controls { border-color: #fcd34d; background: #fffbeb; }
+        .stock-warning .qty-input, .stock-warning .qty-btn { color: #d97706; }
+        .stock-warning .qty-btn:hover { background: #fde68a; }
+        
+        .stock-danger td { background-color: #fef2f2 !important; }
+        .stock-danger .qty-controls { border-color: #fca5a5; background: #fef2f2; }
+        .stock-danger .qty-input, .stock-danger .qty-btn { color: #ef4444; }
+        .stock-danger .qty-btn:hover { background: #fecaca; }
+
+        /* Filter Tabs */
+        .filter-tabs { display: flex; gap: 10px; }
+        .filter-btn { 
+            background: #ffffff; border: 1px solid #e5e7eb; color: #4b5563; 
+            padding: 8px 20px; border-radius: 30px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 0.85rem;
+        }
+        .filter-btn.active { background: #3b82f6; border-color: #3b82f6; color: white; font-weight: 600; }
+        .filter-btn:hover:not(.active) { background: #f9fafb; color: #111827; }
+        .filter-btn.btn-warning-outline { color: #d97706; border-color: #fde68a; background: #fffbeb; }
+
+        /* ป้าย Badge เล็กๆ */
+        .badge-soft { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; border: 1px solid transparent; }
+        .badge-rent { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .badge-buy { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+        
+        /* ปุ่มแก้ไข */
+        .btn-edit { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; color: #6b7280; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; }
+        .btn-edit:hover { background: #f3f4f6; color: #111827; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand mb-5"><i class="fa-solid fa-user-shield me-2 fs-3 text-primary"></i> <span class="fs-4 fw-bold text-dark">Admin Panel</span></div>
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie w-20"></i> ภาพรวมรายวัน</a>
+        <a href="approve.html" class="nav-item"><i class="fa-solid fa-money-bill-transfer w-20"></i> อนุมัติสลิป <span class="badge bg-danger ms-auto rounded-pill px-2 py-1" id="navSlipCount">2</span></a>
+        <a href="schedule.html" class="nav-item"><i class="fa-solid fa-calendar-check w-20"></i> จัดการตารางคอร์ท</a>
+        <a href="inventory.html" class="nav-item active"><i class="fa-solid fa-box w-20"></i> สต๊อกสินค้า/อุปกรณ์</a>
+        <a href="chat.html" class="nav-item"><i class="fa-solid fa-comments w-20"></i> ข้อความ (Chat)</a>
+        
+        <a href="../index.html" class="nav-item" style="position: absolute; bottom: 20px; width: calc(100% - 40px); border-top: 1px solid #e5e7eb; padding-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ</a>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold m-0 text-dark">สต๊อกสินค้าและอุปกรณ์</h2>
+                <p class="text-muted m-0 mt-2 fs-6">จัดการรายการสินค้า อัปเดตจำนวน และเพิ่มรายการใหม่</p>
+            </div>
+            <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold shadow-sm" onclick="alert('ฟีเจอร์เพิ่มสินค้าใหม่กำลังมา!');">
+                <i class="fa-solid fa-plus me-2"></i> เพิ่มสินค้าใหม่
+            </button>
+        </div>
+
+        <div class="clean-card p-0 overflow-hidden">
+            <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3 bg-light">
+                <div class="filter-tabs m-0">
+                    <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
+                    <button class="filter-btn" data-filter="rent">อุปกรณ์เช่า</button>
+                    <button class="filter-btn" data-filter="buy">สินค้าขายขาด</button>
+                    <button class="filter-btn btn-warning-outline" data-filter="low"><i class="fa-solid fa-triangle-exclamation me-1"></i> ใกล้หมด</button>
+                </div>
+                
+                <div class="input-group" style="width: 250px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control border-start-0" style="background: #fff; box-shadow: none;" placeholder="ค้นหาสินค้า..." id="searchInput">
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-clean mb-0">
+                    <thead>
+                        <tr>
+                            <th width="8%">รูป</th>
+                            <th width="32%">ชื่อสินค้า / รายละเอียด</th>
+                            <th width="15%">ประเภท</th>
+                            <th width="15%">ราคา</th>
+                            <th width="20%" class="text-center">จำนวนคงเหลือ</th>
+                            <th width="10%" class="text-center">ตั้งค่า</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTable">
+                        
+                        <tr class="product-row" data-category="rent" data-qty="15">
+                            <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRagKZemzA0jkLJarNdXAo2K1Y9SfBWnleBkw&s" class="item-thumb"></td>
+                            <td>
+                                <div class="fw-bold fs-6 text-dark mb-1">ไม้แบดมินตัน (Yonex)</div>
+                                <div class="small text-muted">รหัส: RENT-001</div>
+                            </td>
+                            <td><span class="badge-soft badge-rent"><i class="fa-solid fa-retweet me-1"></i> เช่า</span></td>
+                            <td><div class="fw-bold text-primary">฿50 <span class="fs-6 fw-normal text-muted">/ชม.</span></div></td>
+                            <td class="text-center">
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="updateQty(this, -1)"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="text" class="qty-input" value="15" readonly>
+                                    <button class="qty-btn" onclick="updateQty(this, 1)"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            </td>
+                        </tr>
+
+                        <tr class="product-row stock-warning" data-category="rent" data-qty="3">
+                            <td><img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="item-thumb"></td>
+                            <td>
+                                <div class="fw-bold fs-6 text-dark mb-1">รองเท้าแบดมินตัน</div>
+                                <div class="small" style="color: #d97706;"><i class="fa-solid fa-triangle-exclamation me-1"></i> ไซส์ 42 ใกล้หมด</div>
+                            </td>
+                            <td><span class="badge-soft badge-rent"><i class="fa-solid fa-retweet me-1"></i> เช่า</span></td>
+                            <td><div class="fw-bold text-primary">฿40 <span class="fs-6 fw-normal text-muted">/คู่</span></div></td>
+                            <td class="text-center">
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="updateQty(this, -1)"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="text" class="qty-input" value="3" readonly>
+                                    <button class="qty-btn" onclick="updateQty(this, 1)"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            </td>
+                        </tr>
+
+                        <tr class="product-row" data-category="buy" data-qty="24">
+                            <td><img src="https://images.unsplash.com/photo-1611689342806-0863700ce6e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="item-thumb"></td>
+                            <td>
+                                <div class="fw-bold fs-6 text-dark mb-1">ลูกแบดมินตัน RSL Silver</div>
+                                <div class="small text-muted">แบบหลอด (12 ลูก)</div>
+                            </td>
+                            <td><span class="badge-soft badge-buy"><i class="fa-solid fa-box-open me-1"></i> ขายขาด</span></td>
+                            <td><div class="fw-bold text-success">฿650 <span class="fs-6 fw-normal text-muted">/หลอด</span></div></td>
+                            <td class="text-center">
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="updateQty(this, -1)"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="text" class="qty-input" value="24" readonly>
+                                    <button class="qty-btn" onclick="updateQty(this, 1)"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            </td>
+                        </tr>
+
+                        <tr class="product-row stock-danger" data-category="buy" data-qty="0">
+                            <td><img src="https://images.unsplash.com/photo-1523362628745-0c100150b504?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" class="item-thumb" style="filter: grayscale(100%); opacity: 0.6;"></td>
+                            <td>
+                                <div class="fw-bold fs-6 text-dark mb-1">น้ำแร่ T.S. Pattani</div>
+                                <div class="small text-danger fw-bold"><i class="fa-solid fa-circle-xmark me-1"></i> สินค้าหมดสต๊อก</div>
+                            </td>
+                            <td><span class="badge-soft badge-buy"><i class="fa-solid fa-box-open me-1"></i> ขายขาด</span></td>
+                            <td><div class="fw-bold text-success">฿15 <span class="fs-6 fw-normal text-muted">/ขวด</span></div></td>
+                            <td class="text-center">
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="updateQty(this, -1)"><i class="fa-solid fa-minus"></i></button>
+                                    <input type="text" class="qty-input" value="0" readonly>
+                                    <button class="qty-btn" onclick="updateQty(this, 1)"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function updateQty(btn, change) {
+            const container = btn.closest('.qty-controls');
+            const input = container.querySelector('.qty-input');
+            const row = btn.closest('tr');
+            
+            let currentVal = parseInt(input.value);
+            let newVal = currentVal + change;
+            
+            if (newVal < 0) newVal = 0;
+            input.value = newVal;
+            row.setAttribute('data-qty', newVal);
+
+            if (newVal === 0) {
+                row.className = 'product-row stock-danger';
+            } else if (newVal <= 5) {
+                row.className = 'product-row stock-warning';
+            } else {
+                row.className = 'product-row';
+            }
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                document.querySelectorAll('.product-row').forEach(row => {
+                    const cat = row.getAttribute('data-category');
+                    const qty = parseInt(row.getAttribute('data-qty'));
+                    
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else if (filter === 'low' && qty <= 5) {
+                        row.style.display = '';
+                    } else if (filter === cat) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            document.querySelectorAll('.product-row').forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

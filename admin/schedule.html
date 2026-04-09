@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>จัดการตารางคอร์ท - T.S. Pattani</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           UI Clean & Minimalist (HCI Standard)
+           ========================================= */
+        body { background-color: #f4f6f9; color: #333333; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .sidebar { background: #ffffff; border-right: 1px solid #e5e7eb; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar .brand { color: #1e3a8a !important; }
+        .nav-item { color: #6b7280; font-weight: 500; transition: 0.2s; }
+        .nav-item:hover:not(.active) { background: #f3f4f6; color: #111827; }
+        .nav-item.active { background: #eff6ff; border-left: 4px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+
+        /* ตารางเวลา (Timetable) */
+        .schedule-container {
+            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto;
+        }
+
+        .schedule-table { width: 100%; min-width: 800px; border-collapse: separate; border-spacing: 8px; }
+        
+        /* หัวตาราง (ชื่อคอร์ท) */
+        .schedule-table th {
+            padding: 15px; text-align: center; color: #6b7280; font-weight: 600; 
+            border-radius: 8px; background: #f9fafb; border: 1px solid #e5e7eb;
+        }
+        
+        /* คอลัมน์เวลาด้านซ้าย */
+        .time-col { background: #f3f4f6 !important; color: #374151 !important; font-weight: bold; width: 120px; }
+
+        /* กล่องสถานะแต่ละคอร์ท */
+        .slot {
+            padding: 15px; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+            height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .slot:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        /* 🟢 สีสถานะต่างๆ (Soft Colors) */
+        .status-available { background: #ecfdf5; border-color: #a7f3d0; color: #059669; }
+        .status-booked { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+        .status-pending { background: #fffbeb; border-color: #fde68a; color: #d97706; }
+        .status-maintenance { background: #fef2f2; border-color: #fecaca; color: #dc2626; cursor: not-allowed; }
+
+        /* แถบตัวระบุสี (Legend) */
+        .legend-box { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 5px; vertical-align: middle; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* ตัวเลือกวันที่ */
+        .date-selector { 
+            background: #ffffff; border-radius: 30px; padding: 6px 15px; 
+            display: inline-flex; align-items: center; gap: 15px; border: 1px solid #e5e7eb; 
+        }
+        .date-btn { background: #f3f4f6; border: none; color: #4b5563; cursor: pointer; transition: 0.2s; padding: 6px 12px; border-radius: 50%; }
+        .date-btn:hover { background: #e5e7eb; color: #111827; }
+
+        /* Pop-up (Clean) */
+        .clean-modal { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand mb-5"><i class="fa-solid fa-user-shield me-2 fs-3 text-primary"></i> <span class="fs-4 fw-bold text-dark">Admin Panel</span></div>
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie w-20"></i> ภาพรวมรายวัน</a>
+        <a href="approve.html" class="nav-item"><i class="fa-solid fa-money-bill-transfer w-20"></i> อนุมัติสลิป <span class="badge bg-danger ms-auto rounded-pill px-2 py-1" id="navSlipCount">2</span></a>
+        <a href="schedule.html" class="nav-item active"><i class="fa-solid fa-calendar-check w-20"></i> จัดการตารางคอร์ท</a>
+        <a href="inventory.html" class="nav-item"><i class="fa-solid fa-box w-20"></i> สต๊อกสินค้า/อุปกรณ์</a>
+        <a href="chat.html" class="nav-item"><i class="fa-solid fa-comments w-20"></i> ข้อความ (Chat)</a>
+        
+        <a href="../index.html" class="nav-item" style="position: absolute; bottom: 20px; width: calc(100% - 40px); border-top: 1px solid #e5e7eb; padding-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ</a>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold m-0 text-dark">จัดการตารางคอร์ท</h2>
+                <p class="text-muted m-0 mt-2 fs-6">ดูภาพรวมการจอง บล็อกคอร์ท และจัดการคิวล่วงหน้า</p>
+            </div>
+            
+            <div class="date-selector shadow-sm">
+                <button class="date-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                <span class="fw-bold fs-6 text-dark">พฤหัสบดี, 9 เม.ย. 2026</span>
+                <button class="date-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-4 mb-4 bg-white p-3 rounded-3 border">
+            <div class="text-muted small fw-bold"><span class="legend-box" style="background: #ecfdf5; border-color: #a7f3d0;"></span> ว่าง (เปิดให้จอง)</div>
+            <div class="text-muted small fw-bold"><span class="legend-box" style="background: #eff6ff; border-color: #bfdbfe;"></span> จองแล้ว / ยืนยันแล้ว</div>
+            <div class="text-muted small fw-bold"><span class="legend-box" style="background: #fffbeb; border-color: #fde68a;"></span> รอตรวจสลิป</div>
+            <div class="text-muted small fw-bold"><span class="legend-box" style="background: #fef2f2; border-color: #fecaca;"></span> บล็อกคอร์ท / ปรับปรุง</div>
+        </div>
+
+        <div class="schedule-container">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th class="time-col"><i class="fa-regular fa-clock me-1"></i> เวลา</th>
+                        <th>คอร์ท 1</th>
+                        <th>คอร์ท 2</th>
+                        <th>คอร์ท 3</th>
+                        <th>คอร์ท 4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="time-col">17:00 - 18:00</th>
+                        <td><div class="slot status-booked" onclick="showBookingDetails('ฟาริด', '081-234-XXXX')"><i class="fa-solid fa-user mb-1"></i><span class="small fw-normal mt-1">จองแล้ว (เว็บ)</span></div></td>
+                        <td><div class="slot status-available" onclick="blockCourt('17:00', 'คอร์ท 2', this)"><i class="fa-solid fa-check mb-1"></i><span class="small fw-normal mt-1">ว่าง</span></div></td>
+                        <td><div class="slot status-available" onclick="blockCourt('17:00', 'คอร์ท 3', this)"><i class="fa-solid fa-check mb-1"></i><span class="small fw-normal mt-1">ว่าง</span></div></td>
+                        <td><div class="slot status-booked" onclick="showBookingDetails('Walk-in', '-')"><i class="fa-solid fa-person-walking mb-1"></i><span class="small fw-normal mt-1">Walk-in</span></div></td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="time-col" style="border: 2px solid #10b981;">18:00 - 19:00<br><span class="badge bg-success mt-1 fw-normal">รอบปัจจุบัน</span></th>
+                        <td><div class="slot status-booked" onclick="showBookingDetails('สมหญิง', '085-555-XXXX')"><i class="fa-solid fa-user mb-1"></i><span class="small fw-normal mt-1">จองแล้ว (เว็บ)</span></div></td>
+                        <td><div class="slot status-pending" onclick="alert('กรุณาไปที่หน้า อนุมัติสลิป เพื่อยืนยันรายการนี้');"><i class="fa-solid fa-hourglass-half mb-1"></i><span class="small fw-normal mt-1">รอตรวจสลิป</span></div></td>
+                        <td><div class="slot status-available" onclick="blockCourt('18:00', 'คอร์ท 3', this)"><i class="fa-solid fa-check mb-1"></i><span class="small fw-normal mt-1">ว่าง</span></div></td>
+                        <td><div class="slot status-available" onclick="blockCourt('18:00', 'คอร์ท 4', this)"><i class="fa-solid fa-check mb-1"></i><span class="small fw-normal mt-1">ว่าง</span></div></td>
+                    </tr>
+
+                    <tr>
+                        <th class="time-col">19:00 - 20:00</th>
+                        <td><div class="slot status-available" onclick="blockCourt('19:00', 'คอร์ท 1', this)"><i class="fa-solid fa-check mb-1"></i><span class="small fw-normal mt-1">ว่าง</span></div></td>
+                        <td><div class="slot status-available" onclick="blockCourt('19:00', 'คอร์ท 2', this)"><i class="fa-solid fa-check mb-1"></i><span class="small fw-normal mt-1">ว่าง</span></div></td>
+                        <td><div class="slot status-maintenance"><i class="fa-solid fa-screwdriver-wrench mb-1"></i><span class="small fw-normal mt-1">ปิดซ่อมไฟ</span></div></td>
+                        <td><div class="slot status-maintenance"><i class="fa-solid fa-user-tie mb-1"></i><span class="small fw-normal mt-1">ล็อกให้โค้ชสอน</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="infoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content clean-modal border-0">
+                <div class="modal-header bg-light border-bottom border-light">
+                    <h6 class="modal-title fw-bold text-dark"><i class="fa-solid fa-address-card text-primary me-2"></i> ข้อมูลลูกค้า</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="mb-1 text-muted small fw-bold">ชื่อผู้จอง</p>
+                    <h5 class="fw-bold text-dark" id="modalName">ชื่อลูกค้า</h5>
+                    <p class="mb-4 text-muted small fw-bold">เบอร์โทร: <span id="modalPhone" class="fw-normal text-dark">08X-XXX-XXXX</span></p>
+                    
+                    <button class="btn btn-outline-danger w-100 btn-sm py-2"><i class="fa-solid fa-trash me-1"></i> ยกเลิกคิวนี้ (คืนเงิน)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showBookingDetails(name, phone) {
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalPhone').innerText = phone;
+            var myModal = new bootstrap.Modal(document.getElementById('infoModal'));
+            myModal.show();
+        }
+
+        function blockCourt(time, court, element) {
+            if(confirm(`คุณต้องการ "ล็อกคอร์ท" ${court} รอบเวลา ${time} หรือไม่? \n(เช่น มีโค้ชมาสอน หรือ ปิดซ่อมแซม)`)) {
+                element.className = 'slot status-maintenance';
+                element.innerHTML = '<i class="fa-solid fa-lock mb-1"></i><span class="small fw-normal mt-1">ล็อกคอร์ทแล้ว</span>';
+                element.onclick = null; 
+            }
+        }
+    </script>
+</body>
+</html>

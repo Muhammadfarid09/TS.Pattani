@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เข้าสู่ระบบ - T.S. Pattani</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style> body { display: flex; justify-content: center; align-items: center; } .login-box { width: 100%; max-width: 400px; text-align: center; } </style>
+</head>
+<body>
+    <div class="clean-card login-box">
+        <i class="fa-solid fa-shuttlecock fa-3x mb-3 text-primary"></i>
+        <h3 class="fw-bold text-dark">T.S. Pattani</h3>
+        <p class="text-muted mb-4">ระบบจองสนามแบดมินตัน</p>
+
+        <input type="text" class="form-control-clean" placeholder="เบอร์โทรศัพท์ (10 หลัก)">
+        <input type="password" class="form-control-clean mb-2" placeholder="รหัสผ่าน">
+        
+        <div class="text-end mb-4">
+            <a href="#" class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">ลืมรหัสผ่านใช่หรือไม่?</a>
+        </div>
+
+        <button class="btn btn-primary-clean w-100 py-2 mb-3" onclick="window.location.href='user/home.html'">เข้าสู่ระบบ (User)</button>
+        <div class="text-muted small mb-3">หรือ</div>
+        <button class="btn btn-clean w-100 py-2" onclick="window.location.href='admin/dashboard.html'">เข้าสู่ระบบ (Admin)</button>
+
+        <div class="mt-4 pt-3 border-top">
+            <span class="text-muted small">ยังไม่มีบัญชีใช่ไหม? </span>
+            <a href="register.html" class="forgot-link fw-bold">สมัครสมาชิก</a>
+        </div>
+    </div>
+
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content clean-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-unlock-keyhole text-primary me-2"></i>รีเซ็ตรหัสผ่าน</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 pb-4 text-start">
+                    <p class="text-muted small mb-4">กรุณากรอกเบอร์โทรศัพท์ที่คุณใช้ลงทะเบียน เราจะส่งรหัส OTP ไปเพื่อตั้งรหัสผ่านใหม่</p>
+                    <input type="text" class="form-control-clean mb-0" placeholder="08X-XXX-XXXX">
+                </div>
+                <div class="modal-footer border-0 justify-content-between px-4">
+                    <button type="button" class="btn btn-clean border-0" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary-clean px-4" onclick="alert('ส่งรหัส OTP เรียบร้อยแล้ว!');" data-bs-dismiss="modal">ส่งรหัส OTP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

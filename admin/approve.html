@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>อนุมัติสลิป - T.S. Pattani</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           UI Clean & Minimalist (HCI Standard)
+           ========================================= */
+        body { background-color: #f4f6f9; color: #333333; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .sidebar { background: #ffffff; border-right: 1px solid #e5e7eb; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar .brand { color: #1e3a8a !important; }
+        .nav-item { color: #6b7280; font-weight: 500; transition: 0.2s; }
+        .nav-item:hover:not(.active) { background: #f3f4f6; color: #111827; }
+        .nav-item.active { background: #eff6ff; border-left: 4px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+
+        /* การ์ดสลิป */
+        .clean-card {
+            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 15px; 
+            padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: all 0.2s ease;
+            display: flex; flex-direction: column; height: 100%;
+        }
+        .clean-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.05); border-color: #d1d5db; }
+
+        .slip-img-container {
+            width: 100%; height: 250px; border-radius: 10px; overflow: hidden;
+            position: relative; background: #f3f4f6; cursor: pointer; border: 1px solid #e5e7eb;
+        }
+        .slip-img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .slip-img-container:hover img { transform: scale(1.05); opacity: 0.8; }
+        .slip-img-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.3s; color: white; font-size: 2.5rem; background: rgba(0,0,0,0.2);
+        }
+        .slip-img-container:hover .slip-img-overlay { opacity: 1; }
+
+        /* ตัวกรอง (Filter) */
+        .filter-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .filter-btn { 
+            background: #ffffff; border: 1px solid #e5e7eb; color: #4b5563; 
+            padding: 8px 20px; border-radius: 30px; cursor: pointer; transition: 0.2s; font-weight: 500; font-size: 0.85rem;
+        }
+        .filter-btn.active { background: #3b82f6; border-color: #3b82f6; color: white; font-weight: 600; }
+        .filter-btn:hover:not(.active) { background: #f9fafb; color: #111827; }
+        .filter-btn.btn-danger-outline { color: #ef4444; border-color: #fca5a5; background: #fef2f2; }
+
+        /* ป้ายสถานะ */
+        .badge-soft { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+        .badge-soft-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-soft-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        .fade-out { animation: fadeOut 0.4s ease forwards; }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.9); } }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand mb-5"><i class="fa-solid fa-user-shield me-2 fs-3 text-primary"></i> <span class="fs-4 fw-bold text-dark">Admin Panel</span></div>
+        
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie w-20"></i> ภาพรวมรายวัน</a>
+        <a href="approve.html" class="nav-item active"><i class="fa-solid fa-money-bill-transfer w-20"></i> อนุมัติสลิป <span class="badge bg-danger ms-auto rounded-pill px-2 py-1" id="navSlipCount">2</span></a>
+        <a href="schedule.html" class="nav-item"><i class="fa-solid fa-calendar-check w-20"></i> จัดการตารางคอร์ท</a>
+        <a href="inventory.html" class="nav-item"><i class="fa-solid fa-box w-20"></i> สต๊อกสินค้า/อุปกรณ์</a>
+        <a href="chat.html" class="nav-item"><i class="fa-solid fa-comments w-20"></i> ข้อความ (Chat)</a>
+        
+        <a href="../index.html" class="nav-item" style="position: absolute; bottom: 20px; width: calc(100% - 40px); border-top: 1px solid #e5e7eb; padding-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-bold m-0 text-dark">ตรวจสอบและอนุมัติสลิป</h2>
+                <p class="text-muted m-0 mt-2 fs-6">ตรวจสอบยอดเงินให้ตรงกับการจองก่อนกดยืนยัน</p>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-btn active">รอตรวจสอบ (2)</button>
+            <button class="filter-btn" onclick="alert('แสดงประวัติสลิปที่อนุมัติแล้ว');">ประวัติการอนุมัติ</button>
+            <button class="filter-btn btn-danger-outline" onclick="alert('แสดงรายการที่ถูกปฏิเสธ');">รายการที่มีปัญหา</button>
+        </div>
+
+        <div class="row g-4" id="slipContainer">
+            
+            <div class="col-md-6 col-lg-4 slip-item">
+                <div class="clean-card">
+                    <div class="slip-img-container mb-3" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')">
+                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="สลิปโอนเงิน">
+                        <div class="slip-img-overlay"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge-soft badge-soft-warning">รอตรวจสอบ</span>
+                        <span class="fw-bold fs-4 text-warning" style="color: #d97706 !important;">฿ 230</span>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-1 text-dark">#TSP-88901</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-user me-1 text-secondary"></i> คุณฟาริด (081-234-XXXX)</p>
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4 flex-grow-1 border">
+                        <div class="mb-1"><span class="badge-soft badge-soft-info me-2">คอร์ท 2</span> <span class="text-dark fw-medium">18:00 - 19:00 น.</span></div>
+                        <div class="small text-muted mt-2"><i class="fa-solid fa-basket-shopping me-1"></i> ไม้แบด 1, น้ำแร่ 2</div>
+                        <div class="small text-muted mt-2 border-top pt-2"><i class="fa-regular fa-clock me-1"></i> เวลาโอน: 16:45 น.</div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mt-auto">
+                        <button class="btn btn-success w-100 py-2 fw-bold" onclick="actionSlip(this, 'approve')"><i class="fa-solid fa-check me-2"></i> อนุมัติ</button>
+                        <button class="btn btn-outline-danger py-2 px-3" title="ไม่อนุมัติ" onclick="actionSlip(this, 'reject')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 slip-item">
+                <div class="clean-card">
+                    <div class="slip-img-container mb-3" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="สลิปโอนเงิน">
+                        <div class="slip-img-overlay"><i class="fa-solid fa-magnifying-glass-plus"></i></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge-soft badge-soft-warning">รอตรวจสอบ</span>
+                        <span class="fw-bold fs-4 text-warning" style="color: #d97706 !important;">฿ 300</span>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-1 text-dark">#TSP-88902</h5>
+                    <p class="text-muted small mb-3"><i class="fa-solid fa-user me-1 text-secondary"></i> คุณสมชาย (089-999-XXXX)</p>
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4 flex-grow-1 border">
+                        <div class="mb-1"><span class="badge-soft badge-soft-info me-2">คอร์ท 4</span> <span class="text-dark fw-medium">20:00 - 22:00 น.</span></div>
+                        <div class="small text-muted mt-2 border-top pt-2"><i class="fa-regular fa-clock me-1"></i> เวลาโอน: 17:10 น.</div>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mt-auto">
+                        <button class="btn btn-success w-100 py-2 fw-bold" onclick="actionSlip(this, 'approve')"><i class="fa-solid fa-check me-2"></i> อนุมัติ</button>
+                        <button class="btn btn-outline-danger py-2 px-3" title="ไม่อนุมัติ" onclick="actionSlip(this, 'reject')"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close btn-close-white fs-4" data-bs-dismiss="modal" style="filter: invert(1) grayscale(100%) brightness(200%);"></button>
+                </div>
+                <div class="modal-body text-center pt-0">
+                    <img id="fullSizeImage" src="" alt="สลิปแบบขยาย" class="img-fluid rounded-3 shadow-lg" style="max-height: 80vh; border: 4px solid white;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let slipCount = 2;
+
+        function showImage(imgSrc) {
+            document.getElementById('fullSizeImage').src = imgSrc;
+        }
+
+        function actionSlip(btnElement, action) {
+            if(action === 'reject') {
+                if(!confirm('คุณแน่ใจหรือไม่ว่าต้องการ "ไม่อนุมัติ" สลิปนี้?')) return;
+            }
+            
+            const cardItem = btnElement.closest('.slip-item');
+            cardItem.classList.add('fade-out'); 
+            
+            setTimeout(() => {
+                cardItem.remove(); 
+                slipCount--;
+                document.getElementById('navSlipCount').innerText = slipCount;
+                
+                document.querySelector('.filter-btn.active').innerText = `รอตรวจสอบ (${slipCount})`;
+
+                if(slipCount === 0) {
+                    document.getElementById('navSlipCount').style.display = 'none';
+                    // เปลี่ยนดีไซน์ตอนว่างให้เป็นโทนสว่าง
+                    document.getElementById('slipContainer').innerHTML = `
+                        <div class="col-12 text-center py-5 mt-4">
+                            <div class="d-inline-flex justify-content-center align-items-center rounded-circle mb-3" style="width: 100px; height: 100px; background: #ecfdf5;">
+                                <i class="fa-solid fa-clipboard-check text-success" style="font-size: 3rem;"></i>
+                            </div>
+                            <h4 class="text-dark fw-bold">ไม่มีสลิปรอตรวจสอบ</h4>
+                            <p class="text-muted">คุณเคลียร์รายการทั้งหมดเรียบร้อยแล้ว!</p>
+                        </div>
+                    `;
+                }
+            }, 400);
+        }
+    </script>
+</body>
+</html>

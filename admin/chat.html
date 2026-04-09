@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ข้อความแชท - T.S. Pattani</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* =========================================
+           UI Clean & Minimalist (HCI Standard)
+           ========================================= */
+        body { background-color: #f4f6f9; color: #333333; min-height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .sidebar { background: #ffffff; border-right: 1px solid #e5e7eb; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
+        .sidebar .brand { color: #1e3a8a !important; }
+        .nav-item { color: #6b7280; font-weight: 500; transition: 0.2s; }
+        .nav-item:hover:not(.active) { background: #f3f4f6; color: #111827; }
+        .nav-item.active { background: #eff6ff; border-left: 4px solid #3b82f6; color: #3b82f6; font-weight: 600; }
+
+        /* เลย์เอาต์ของหน้าแชท */
+        .chat-container { 
+            background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; 
+            height: calc(100vh - 100px); display: flex; overflow: hidden; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+        }
+        
+        /* รายชื่อคนทักมา (ด้านซ้าย) */
+        .chat-sidebar { width: 340px; border-right: 1px solid #e5e7eb; background: #ffffff; display: flex; flex-direction: column; }
+        .chat-search { padding: 20px; border-bottom: 1px solid #e5e7eb; background: #f9fafb; }
+        .chat-search input { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 15px 10px 40px; width: 100%; outline: none; transition: 0.2s; }
+        .chat-search input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .search-icon-wrapper { position: relative; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+        
+        .user-list { overflow-y: auto; flex: 1; }
+        .user-item { padding: 15px 20px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; display: flex; gap: 15px; align-items: center; }
+        .user-item:hover { background: #f9fafb; }
+        .user-item.active { background: #eff6ff; border-left: 3px solid #3b82f6; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #dbeafe; color: #1d4ed8; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0; }
+        .user-info { flex: 1; overflow: hidden; }
+        .user-name { font-weight: 600; color: #111827; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
+        .user-name span { font-size: 0.75rem; color: #6b7280; font-weight: normal; }
+        .user-msg { font-size: 0.85rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .unread-badge { background: #ef4444; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+
+        /* หน้าต่างสนทนา (ด้านขวา) */
+        .chat-main { flex: 1; display: flex; flex-direction: column; background: #ffffff; }
+        .chat-main-header { padding: 20px 25px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: #ffffff; }
+        
+        .chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: #f9fafb; }
+        .message { max-width: 65%; padding: 12px 18px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5; position: relative; }
+        .msg-client { background: #ffffff; color: #111827; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .msg-admin { background: #3b82f6; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2); }
+        .msg-time { font-size: 0.7rem; margin-top: 6px; text-align: right; }
+        .msg-client .msg-time { color: #9ca3af; }
+        .msg-admin .msg-time { color: rgba(255,255,255,0.7); }
+
+        .chat-input-area { padding: 20px 25px; border-top: 1px solid #e5e7eb; display: flex; gap: 15px; background: #ffffff; align-items: center; }
+        .btn-attach { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; }
+        .btn-attach:hover { background: #e5e7eb; color: #374151; }
+        .chat-input-area input { flex: 1; border: 1px solid #e5e7eb; border-radius: 25px; padding: 12px 20px; outline: none; background: #f9fafb; transition: 0.2s; font-size: 0.95rem; }
+        .chat-input-area input:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .btn-send { background: #3b82f6; color: #ffffff; border: none; padding: 0 25px; height: 45px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .btn-send:hover { background: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(59,130,246,0.2); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="brand mb-5"><i class="fa-solid fa-user-shield me-2 fs-3 text-primary"></i> <span class="fs-4 fw-bold text-dark">Admin Panel</span></div>
+        <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie w-20"></i> ภาพรวมรายวัน</a>
+        <a href="approve.html" class="nav-item"><i class="fa-solid fa-money-bill-transfer w-20"></i> อนุมัติสลิป <span class="badge bg-danger ms-auto rounded-pill px-2 py-1">2</span></a>
+        <a href="schedule.html" class="nav-item"><i class="fa-solid fa-calendar-check w-20"></i> จัดการตารางคอร์ท</a>
+        <a href="inventory.html" class="nav-item"><i class="fa-solid fa-box w-20"></i> สต๊อกสินค้า/อุปกรณ์</a>
+        <a href="chat.html" class="nav-item active"><i class="fa-solid fa-comments w-20"></i> ข้อความ (Chat) <span class="badge bg-primary ms-auto rounded-pill px-2 py-1">1</span></a>
+        
+        <a href="../index.html" class="nav-item" style="position: absolute; bottom: 20px; width: calc(100% - 40px); border-top: 1px solid #e5e7eb; padding-top: 20px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ</a>
+    </div>
+
+    <div class="main-content" style="padding: 30px 40px;">
+        <div class="chat-container">
+            
+            <div class="chat-sidebar">
+                <div class="chat-search">
+                    <div class="search-icon-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" placeholder="ค้นหาชื่อลูกค้า...">
+                    </div>
+                </div>
+                <div class="user-list">
+                    <div class="user-item active">
+                        <div class="avatar">ฟ</div>
+                        <div class="user-info">
+                            <div class="user-name">คุณริศ <span>16:42</span></div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <div class="user-msg fw-bold text-dark">โอนเงินแล้วครับ สลิปรอตรวจน...</div>
+                                <span class="unread-badge">1</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar bg-light text-muted">ส</div>
+                        <div class="user-info">
+                            <div class="user-name">คุณอาซิ <span>เมื่อวาน</span></div>
+                            <div class="user-msg mt-1">ขอบคุณครับ สนามดีมากครับ</div>
+                        </div>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar bg-light text-muted">A</div>
+                        <div class="user-info">
+                            <div class="user-name">Anna Lee <span>จันทร์</span></div>
+                            <div class="user-msg mt-1">พรุ่งนี้คอร์ท 1 ว่างช่วงไหนบ้างคะ?</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-main">
+                <div class="chat-main-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar" style="width: 40px; height: 40px; font-size: 1rem;">ฟ</div>
+                        <div>
+                            <h6 class="fw-bold m-0 text-dark">คุณริศ (081-234-XXXX)</h6>
+                            <span class="small text-success fw-medium"><i class="fa-solid fa-circle text-success me-1" style="font-size: 0.5rem;"></i> กำลังออนไลน์</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-light border text-muted rounded-pill px-3 py-1 text-sm fw-medium"><i class="fa-solid fa-check-double me-1"></i> ทำเครื่องหมายว่าอ่านแล้ว</button>
+                </div>
+
+                <div class="chat-box" id="adminChatBox">
+                    <div class="text-center my-2">
+                        <span class="badge bg-light text-muted border px-3 py-1 fw-normal">วันนี้</span>
+                    </div>
+                    <div class="message msg-client">
+                        พี่ครับ ผมเพิ่งโอนเงินค่าจองคอร์ท 2 ไปตอน 18:00 น. ครับ สลิปรอตรวจนานไหมครับ พอดีจะรีบไปเปลี่ยนชุดครับ
+                        <div class="msg-time">16:42 น.</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <button class="btn-attach" title="แนบไฟล์รูปภาพ"><i class="fa-solid fa-paperclip"></i></button>
+                    <input type="text" id="adminMsgInput" placeholder="พิมพ์ข้อความตอบกลับ..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendAdminMsg()">
+                    <button class="btn-send" onclick="sendAdminMsg()"><i class="fa-solid fa-paper-plane"></i> ส่ง</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function sendAdminMsg() {
+            const input = document.getElementById('adminMsgInput');
+            const msg = input.value.trim();
+            if(msg !== "") {
+                const chatBox = document.getElementById('adminChatBox');
+                const timeStr = new Date().toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                
+                chatBox.innerHTML += `
+                    <div class="message msg-admin">
+                        ${msg}
+                        <div class="msg-time">${timeStr} น.</div>
+                    </div>
+                `;
+                input.value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // ซ่อน badge แจ้งเตือนเมื่อแอดมินตอบกลับ
+                const unreadBadge = document.querySelector('.unread-badge');
+                if(unreadBadge) unreadBadge.style.display = 'none';
+                document.querySelector('.user-msg.fw-bold').classList.remove('fw-bold', 'text-dark');
+            }
+        }
+    </script>
+</body>
+</html>
