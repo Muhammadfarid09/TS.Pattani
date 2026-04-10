@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จองสนาม - T.S. Pattani</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- UI มือถือ (Mobile Responsive) --- */
+        .mobile-header { display: none; justify-content: space-between; align-items: center; background: #fff; padding: 15px 20px; border-bottom: 1px solid #e5e7eb; margin: -20px -20px 20px -20px; position: sticky; top: 0; z-index: 1040; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .bottom-nav { display: none; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1055; display: none; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+
+        @media (max-width: 768px) {
+            /* แสดง Top Bar และ Bottom Nav เฉพาะในมือถือ */
+            .mobile-header { display: flex !important; }
+            .desktop-header-title { display: none !important; }
+            .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); justify-content: space-around; padding: 10px 0 15px 0; z-index: 1050; border-top: 1px solid #e5e7eb; }
+            .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; color: #9ca3af; text-decoration: none; font-size: 0.7rem; font-weight: 600; gap: 4px; padding: 5px 10px; }
+            .bottom-nav .nav-item.active { color: #3b82f6; }
+            .bottom-nav .nav-item i { font-size: 1.3rem; }
+            
+            /* ดันเนื้อหาหนีเมนูบนล่าง */
+            .main-content { margin-left: 0 !important; padding: 20px 20px 90px 20px !important; }
+            .chat-widget-btn { bottom: 90px !important; right: 20px !important; }
+            .chat-window { bottom: 160px !important; right: 20px !important; width: calc(100% - 40px) !important; }
+
+            /* ทำ Sidebar ให้สไลด์ได้ */
+            .sidebar { position: fixed; top: 0; left: -260px; height: 100vh; width: 260px; z-index: 1060; transition: all 0.3s ease; box-shadow: none; }
+            .sidebar.show { left: 0; box-shadow: 5px 0 20px rgba(0,0,0,0.15); }
+        }
+
+        /* --- ตารางจองสนามสไตล์ Clean --- */
+        .clean-table { background-color: transparent !important; border-collapse: separate; border-spacing: 0 10px; width: 100%; }
+        .clean-table th { background-color: transparent !important; border: none !important; color: #6b7280; font-weight: 600; text-align: center; padding-bottom: 10px; }
+        .clean-table td { background-color: transparent !important; border: none !important; vertical-align: middle; }
+        .time-range { font-size: 0.85rem; color: #4b5563; font-weight: 600; text-align: right; padding-right: 20px !important; width: 120px; }
+        .slot { padding: 12px 5px; border-radius: 12px; text-align: center; font-size: 0.8rem; font-weight: 600; transition: all 0.2s ease; border: 1px solid transparent; }
+        
+        .available { background: #ecfdf5; color: #059669; border-color: #a7f3d0; cursor: pointer; }
+        .available:hover { background: #d1fae5; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(5, 150, 105, 0.1); }
+        .booked { background: #f6f3f3; color: #b06363; border-color: #dca1a1; cursor: not-allowed; }
+        .pending { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+
+        .live-indicator { display: flex; align-items: center; gap: 8px; background: #f9fafb; padding: 5px 15px; border-radius: 20px; border: 1px solid #e5e7eb; color: #374151; }
+        .dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .slot-merged { height: 100%; min-height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+        /* --- Chat Widget โทนสว่าง --- */
+        .chat-widget-btn { position: fixed; bottom: 30px; right: 30px; background: #3b82f6; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); cursor: pointer; z-index: 1040; transition: 0.3s; }
+        .chat-widget-btn:hover { transform: scale(1.1); background: #2563eb; }
+        .chat-widget-btn .badge { position: absolute; top: 0; right: 0; font-size: 0.7rem; border: 2px solid #fff; }
+        .chat-window { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 450px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: none; flex-direction: column; z-index: 1040; overflow: hidden; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .chat-header { background: #f9fafb; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #ffffff; }
+        .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; }
+        .chat-bubble.admin { background: #f3f4f6; color: #111827; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .chat-bubble.user { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-footer { padding: 15px; background: #ffffff; border-top: 1px solid #e5e7eb; display: flex; gap: 10px; }
+        .chat-input { flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; color: #111827; border-radius: 20px; padding: 8px 15px; outline: none; transition: 0.2s; }
+        .chat-input:focus { border-color: #3b82f6; background: #fff; }
+        .chat-send-btn { background: #3b82f6; border: none; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; }
+    </style>
+</head>
+<body>
+    
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="mainSidebar">
+        <div class="d-flex justify-content-between align-items-center d-md-none p-3 border-bottom mb-3">
+            <div class="brand m-0"><i class="fa-solid fa-shuttlecock text-primary"></i> เมนู</div>
+            <button class="btn-close" onclick="toggleSidebar()"></button>
+        </div>
+        
+        <div class="brand d-none d-md-block"><i class="fa-solid fa-shuttlecock text-primary"></i> T.S. Pattani</div>
+        <a href="home.html" class="nav-item active"><i class="fa-solid fa-calendar-plus w-20"></i> จองสนาม</a>
+        <a href="shop.html" class="nav-item"><i class="fa-solid fa-basket-shopping w-20"></i> สินค้าและอุปกรณ์</a>
+        <a href="history.html" class="nav-item"><i class="fa-solid fa-receipt w-20"></i> ประวัติการจอง</a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-user w-20"></i> โปรไฟล์ส่วนตัว</a>
+        
+        <a href="../index.html" class="nav-item text-danger" style="position: absolute; bottom: 20px; width: calc(100% - 40px); border-top: 1px solid #e5e7eb; padding-top: 20px;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
+        </a>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="mobile-header">
+            <h5 class="m-0 fw-bold text-primary"><i class="fa-solid fa-shuttlecock me-2"></i>T.S. Pattani</h5>
+            <button class="btn btn-light border" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars fs-5 text-dark"></i>
+            </button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4 desktop-header-title">
+            <h3 class="fw-bold m-0 text-dark">ตารางการจองสนาม</h3>
+            <div class="live-indicator"><div class="dot"></div><span style="font-size: 0.75rem; font-weight: 600;">สถานะเรียลไทม์</span></div>
+        </div>
+        <div class="d-flex d-md-none justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0 text-dark">ตารางจองสนาม</h5>
+            <div class="live-indicator py-1 px-2"><div class="dot"></div><span style="font-size: 0.65rem; font-weight: 600;">เรียลไทม์</span></div>
+        </div>
+
+        <div class="clean-card mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="small text-muted fw-bold mb-2">ระบุวันที่ต้องการเล่น</label>
+                    <input type="date" class="form-control-clean mb-0" value="2026-04-09">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-muted fw-bold mb-2">ช่วงเวลา</label>
+                    <select class="form-control-clean mb-0" style="appearance: auto;">
+                        <option value="all">ทั้งหมด (17:00 - 23:00)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary-clean w-100" style="height: 48px;"><i class="fa-solid fa-magnifying-glass me-2"></i> ค้นหาสนาม</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="clean-card">
+            <div class="table-responsive">
+                <table class="table clean-table mb-0">
+                    <thead>
+                        <tr>
+                            <th width="140">ช่วงเวลา</th>
+                            <th>คอร์ท 1</th><th>คอร์ท 2</th><th>คอร์ท 3</th><th>คอร์ท 4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-range">17:00 - 18:00</td>
+                            <td rowspan="2">
+                                <div class="slot booked slot-merged">
+                                    <i class="fa-solid fa-lock mb-1 fs-5"></i>
+                                    จองแล้ว<br><span class="badge bg-secondary mt-1">2 ชั่วโมง</span>
+                                </div>
+                            </td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                            <td><div class="slot booked">จองแล้ว</div></td>
+                        </tr>
+                        <tr>
+                            <td class="time-range">18:00 - 19:00</td>
+                            <td><div class="slot pending">รอตรวจสอบ</div></td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                        </tr>
+                        <tr>
+                            <td class="time-range">19:00 - 20:00</td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                            <td><div class="slot booked">จองแล้ว</div></td>
+                            <td><div class="slot available" data-bs-toggle="modal" data-bs-target="#paymentModal">ว่าง (คลิกจอง)</div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-4 mt-4 pt-4 border-top">
+                <div class="small d-flex align-items-center gap-2 fw-medium text-muted"><div style="width: 14px; height: 14px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 4px;"></div> ว่าง</div>
+                <div class="small d-flex align-items-center gap-2 fw-medium text-muted"><div style="width: 14px; height: 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 4px;"></div> รอตรวจ</div>
+                <div class="small d-flex align-items-center gap-2 fw-medium text-muted"><div style="width: 14px; height: 14px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px;"></div> จองแล้ว</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content clean-modal">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>ยืนยันการจองและชำระเงิน</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pt-3 pb-2">
+                    <div class="p-3 mb-4 bg-light" style="border-radius: 10px; border: 1px solid #e5e7eb;">
+                        <div class="d-flex justify-content-between mb-2"><span class="text-muted small fw-medium">สนามที่เลือก</span><span class="fw-bold text-dark">คอร์ท 2</span></div>
+                        <div class="d-flex justify-content-between mb-2"><span class="text-muted small fw-medium">วันที่และเวลา</span><span class="fw-bold text-dark">9 เม.ย. 2026 | 1 ชั่วโมง</span></div>
+                        <div class="d-flex justify-content-between pt-3 mt-2" style="border-top: 1px dashed #d1d5db;"><span class="text-muted small fw-bold">ยอดชำระทั้งหมด</span><span class="fw-bold text-success fs-5">฿ 150.00</span></div>
+                    </div>
+                    <div class="text-center mb-4">
+                        <div class="mb-2 small text-muted fw-medium">สแกน QR Code เพื่อชำระเงิน</div>
+                        <div class="bg-white p-2 d-inline-block rounded-3 mb-2 border shadow-sm" style="width: 160px; height: 160px;">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" width="100%">
+                        </div>
+                        <div class="small fw-bold text-dark">พร้อมเพย์ / PromptPay</div>
+                    </div>
+                    <label class="form-label small text-muted fw-bold"><i class="fa-solid fa-image me-1"></i> อัปโหลดสลิปโอนเงิน</label>
+                    <input class="form-control form-control-clean mb-2" type="file" style="font-size: 0.85rem;" accept="image/*">
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0 justify-content-between">
+                    <button type="button" class="btn btn-clean border-0" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary-clean px-4" onclick="alert('อัปโหลดสลิปเรียบร้อย!');" data-bs-dismiss="modal">ยืนยันการจอง</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-widget-btn" onclick="toggleChat()">
+        <i class="fa-solid fa-messages"></i><i class="fa-solid fa-comment-dots"></i><span class="badge bg-danger rounded-pill">1</span>
+    </div>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="d-flex align-items-center"><div class="bg-success rounded-circle me-2" style="width: 10px; height: 10px;"></div><span class="text-dark fw-bold">แอดมิน</span></div>
+            <button class="btn-close" onclick="toggleChat()"></button>
+        </div>
+        <div class="chat-body" id="chatBody"><div class="chat-bubble admin">สอบถามได้เลยครับ 😊</div></div>
+        <div class="chat-footer">
+            <input type="text" class="chat-input" id="chatInputMsg" placeholder="พิมพ์..." onkeypress="if(event.key === 'Enter') sendUserMsg()">
+            <button class="chat-send-btn" onclick="sendUserMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item active"><i class="fa-solid fa-calendar-plus"></i><span>จองสนาม</span></a>
+        <a href="shop.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>ร้านค้า</span></a>
+        <a href="history.html" class="nav-item"><i class="fa-solid fa-receipt"></i><span>ประวัติ</span></a>
+        <a href="profile.html" class="nav-item"><i class="fa-solid fa-user"></i><span>โปรไฟล์</span></a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ฟังก์ชันเปิด/ปิด Sidebar เวลากดปุ่ม 3 ขีด
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        // ฟังก์ชันเปิด/ปิด แชท
+        function toggleChat() {
+            const chatWin = document.getElementById('chatWindow');
+            chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendUserMsg() {
+            const input = document.getElementById('chatInputMsg');
+            if(input.value.trim() !== "") {
+                const chatBody = document.getElementById('chatBody');
+                chatBody.innerHTML += `<div class="chat-bubble user">${input.value}</div>`;
+                input.value = "";
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>

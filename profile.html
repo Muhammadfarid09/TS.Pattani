@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์ส่วนตัว - T.S. Pattani</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- UI มือถือ (Mobile Responsive) --- */
+        .mobile-header { display: none; justify-content: space-between; align-items: center; background: #fff; padding: 15px 20px; border-bottom: 1px solid #e5e7eb; margin: -20px -20px 20px -20px; position: sticky; top: 0; z-index: 1040; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .bottom-nav { display: none; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1055; display: none; opacity: 0; transition: opacity 0.3s; }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+
+        @media (max-width: 768px) {
+            .mobile-header { display: flex !important; }
+            .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); justify-content: space-around; padding: 10px 0 15px 0; z-index: 1050; border-top: 1px solid #e5e7eb; }
+            .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; color: #9ca3af; text-decoration: none; font-size: 0.7rem; font-weight: 600; gap: 4px; padding: 5px 10px; }
+            .bottom-nav .nav-item.active { color: #3b82f6; }
+            .bottom-nav .nav-item i { font-size: 1.3rem; }
+            
+            .main-content { margin-left: 0 !important; padding: 20px 20px 90px 20px !important; }
+            .chat-widget-btn { bottom: 90px !important; right: 20px !important; }
+            .chat-window { bottom: 160px !important; right: 20px !important; width: calc(100% - 40px) !important; }
+
+            .sidebar { position: fixed; top: 0; left: -260px; height: 100vh; width: 260px; z-index: 1060; transition: all 0.3s ease; box-shadow: none; }
+            .sidebar.show { left: 0; box-shadow: 5px 0 20px rgba(0,0,0,0.15); }
+        }
+
+        /* สไตล์เสริมสำหรับหน้าโปรไฟล์ */
+        .profile-avatar {
+            width: 120px; height: 120px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem; color: white;
+            margin: 0 auto 15px auto;
+            border: 4px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .edit-avatar-btn {
+            position: absolute; bottom: 0; right: 0;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .edit-avatar-btn:hover { background: #3b82f6; color: white; border-color: #3b82f6; transform: scale(1.1); }
+        
+        .stat-box {
+            background: #f9fafb; 
+            border: 1px solid #e5e7eb;
+            border-radius: 12px; 
+            padding: 15px; 
+            text-align: center;
+            transition: 0.2s;
+        }
+        .stat-box:hover { background: #ffffff; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+        /* ปุ่มออกจากระบบสุดคลีน */
+        .btn-logout {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+            transition: 0.2s;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .btn-logout:hover { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="mainSidebar">
+        <div class="d-flex justify-content-between align-items-center d-md-none p-3 border-bottom mb-3">
+            <div class="brand m-0"><i class="fa-solid fa-shuttlecock text-primary"></i> เมนู</div>
+            <button class="btn-close" onclick="toggleSidebar()"></button>
+        </div>
+        
+        <div class="brand d-none d-md-block"><i class="fa-solid fa-shuttlecock text-primary"></i> <span class="text-dark">T.S. Pattani</span></div>
+        <a href="home.html" class="nav-item"><i class="fa-solid fa-calendar-plus w-20"></i> จองสนาม</a>
+        <a href="shop.html" class="nav-item"><i class="fa-solid fa-basket-shopping w-20"></i> สินค้าและอุปกรณ์</a>
+        <a href="history.html" class="nav-item"><i class="fa-solid fa-receipt w-20"></i> ประวัติการจอง</a>
+        <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user w-20"></i> โปรไฟล์ส่วนตัว</a>
+        </div>
+
+    <div class="main-content">
+        <div class="mobile-header">
+            <h5 class="m-0 fw-bold text-primary"><i class="fa-solid fa-shuttlecock me-2"></i>T.S. Pattani</h5>
+            <button class="btn btn-light border" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars fs-5 text-dark"></i>
+            </button>
+        </div>
+
+        <h3 class="fw-bold mb-4 text-dark">โปรไฟล์ส่วนตัว (My Profile)</h3>
+
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="clean-card text-center h-100">
+                    <div class="profile-avatar">
+                        <i class="fa-regular fa-face-smile"></i>
+                        <div class="edit-avatar-btn" onclick="alert('ฟีเจอร์อัปโหลดรูปภาพกำลังมาเร็วๆ นี้!');">
+                            <i class="fa-solid fa-camera fs-6"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-dark">มูฮัมหมัดฟาริศ เจะเลาะ</h5>
+                    <p class="text-muted small mb-4">สมาชิกระดับทั่วไป (Regular Member)</p>
+
+                    <div class="d-flex gap-2 justify-content-center">
+                        <div class="stat-box w-100">
+                            <div class="fs-4 fw-bold text-primary">12</div>
+                            <div class="small text-muted fw-medium">จองคอร์ท (ครั้ง)</div>
+                        </div>
+                        <div class="stat-box w-100">
+                            <div class="fs-4 fw-bold text-success">3</div>
+                            <div class="small text-muted fw-medium">ซื้อ/เช่าของ (ครั้ง)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="clean-card h-100">
+                    <h5 class="mb-4 border-bottom pb-3 text-dark fw-bold"><i class="fa-solid fa-pen-to-square text-primary me-2"></i> ข้อมูลส่วนตัว</h5>
+                    
+                    <form id="profileForm" onsubmit="event.preventDefault(); saveProfile();">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="small text-muted ms-1 mb-1 fw-bold">ชื่อ-นามสกุล</label>
+                                <input type="text" class="form-control-clean" value="มูฮัมหมัดฟาริศ เจะเลาะ" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small text-muted ms-1 mb-1 fw-bold">เบอร์โทรศัพท์ (ไอดีเข้าสู่ระบบ)</label>
+                                <input type="text" class="form-control-clean text-muted" value="081-234-5678" style="background: #f3f4f6; cursor: not-allowed;" readonly title="ไม่สามารถเปลี่ยนเบอร์โทรศัพท์ได้">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="small text-muted ms-1 mb-1 fw-bold">อีเมล (ถ้ามี)</label>
+                                <input type="email" class="form-control-clean" placeholder="เพิ่มอีเมลของคุณเพื่อรับการแจ้งเตือน">
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3 mt-4 border-bottom pb-3 text-dark fw-bold"><i class="fa-solid fa-lock text-primary me-2"></i> เปลี่ยนรหัสผ่าน</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="small text-muted ms-1 mb-1 fw-bold">รหัสผ่านใหม่</label>
+                                <input type="password" class="form-control-clean" placeholder="ปล่อยว่างไว้หากไม่ต้องการเปลี่ยน">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small text-muted ms-1 mb-1 fw-bold">ยืนยันรหัสผ่านใหม่</label>
+                                <input type="password" class="form-control-clean" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง">
+                            </div>
+                        </div>
+
+                        <div class="text-end mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary-clean px-5 py-2">
+                                <i class="fa-solid fa-floppy-disk me-2"></i> บันทึกข้อมูล
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-5 pt-4 border-top text-center">
+                        <button class="btn btn-logout w-100 py-3" onclick="window.location.href='../index.html';">
+                            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> ออกจากระบบ (Logout)
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-widget-btn" onclick="toggleChat()" style="position: fixed; bottom: 30px; right: 30px; background: #3b82f6; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); cursor: pointer; z-index: 1050; transition: 0.3s;">
+        <i class="fa-solid fa-messages"></i><i class="fa-solid fa-comment-dots"></i>
+        <span class="badge bg-danger rounded-pill" style="position: absolute; top: 0; right: 0; font-size: 0.7rem; border: 2px solid #fff;">1</span>
+    </div>
+
+    <div class="chat-window" id="chatWindow" style="position: fixed; bottom: 100px; right: 30px; width: 350px; height: 450px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: none; flex-direction: column; z-index: 1050; overflow: hidden;">
+        <div class="chat-header" style="background: #f9fafb; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb;">
+            <div class="d-flex align-items-center">
+                <div class="bg-success rounded-circle me-2" style="width: 10px; height: 10px;"></div>
+                <span class="text-dark fw-bold">แอดมิน T.S. Pattani</span>
+            </div>
+            <button class="btn-close" onclick="toggleChat()"></button>
+        </div>
+        <div class="chat-body" id="chatBody" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+            <div class="chat-bubble admin" style="max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; background: #f3f4f6; color: #111827; align-self: flex-start; border-bottom-left-radius: 2px;">สวัสดีครับ แอดมินยินดีให้บริการ มีข้อสงสัยเรื่องการจองสนามสอบถามได้เลยครับ 😊</div>
+        </div>
+        <div class="chat-footer" style="padding: 15px; border-top: 1px solid #e5e7eb; display: flex; gap: 10px;">
+            <input type="text" class="chat-input" id="chatInputMsg" placeholder="พิมพ์ข้อความ..." onkeypress="if(event.key === 'Enter') sendUserMsg()" style="flex: 1; background: #f9fafb; border: 1px solid #e5e7eb; color: #111827; border-radius: 20px; padding: 8px 15px; outline: none;">
+            <button class="chat-send-btn" onclick="sendUserMsg()" style="background: #3b82f6; border: none; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item"><i class="fa-solid fa-calendar-plus"></i><span>จองสนาม</span></a>
+        <a href="shop.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>ร้านค้า</span></a>
+        <a href="history.html" class="nav-item"><i class="fa-solid fa-receipt"></i><span>ประวัติ</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user"></i><span>โปรไฟล์</span></a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ระบบบันทึกข้อมูล
+        function saveProfile() {
+            const saveBtn = document.querySelector('button[type="submit"]');
+            const originalText = saveBtn.innerHTML;
+            
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> กำลังบันทึก...';
+            saveBtn.style.opacity = '0.7';
+
+            setTimeout(() => {
+                saveBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i> บันทึกสำเร็จ!';
+                saveBtn.classList.replace('btn-primary-clean', 'btn-success');
+                saveBtn.style.opacity = '1';
+                
+                setTimeout(() => {
+                    alert('อัปเดตข้อมูลส่วนตัวเรียบร้อยแล้วครับ!');
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.classList.replace('btn-success', 'btn-primary-clean');
+                }, 500);
+            }, 1000);
+        }
+
+        // ระบบแชท
+        function toggleChat() {
+            const chatWin = document.getElementById('chatWindow');
+            chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendUserMsg() {
+            const input = document.getElementById('chatInputMsg');
+            const msg = input.value.trim();
+            if(msg !== "") {
+                const chatBody = document.getElementById('chatBody');
+                chatBody.innerHTML += `<div class="chat-bubble user" style="max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 2px;">${msg}</div>`;
+                input.value = "";
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+
+        // Sidebar สำหรับมือถือ
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
