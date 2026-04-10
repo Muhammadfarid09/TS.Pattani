@@ -85,6 +85,9 @@
             <div class="chat-sidebar">
                 <div class="chat-search">
                     <div class="search-icon-wrapper">
+                        <button class="btn btn-primary-clean mobile-menu-btn me-3" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                         <input type="text" placeholder="ค้นหาชื่อลูกค้า...">
                     </div>
@@ -171,6 +174,10 @@
                 if(unreadBadge) unreadBadge.style.display = 'none';
                 document.querySelector('.user-msg.fw-bold').classList.remove('fw-bold', 'text-dark');
             }
+        }
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
         }
     </script>
 </body>
