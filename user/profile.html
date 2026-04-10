@@ -55,6 +55,9 @@
     </div>
 
     <div class="main-content">
+        <button class="btn btn-primary-clean mobile-menu-btn me-3" onclick="toggleSidebar()">
+            <i class="fa-solid fa-bars"></i>
+        </button>
         <h3 class="fw-bold mb-4 text-dark">โปรไฟล์ส่วนตัว (My Profile)</h3>
 
         <div class="row g-4">
@@ -190,6 +193,10 @@
                 input.value = "";
                 chatBody.scrollTop = chatBody.scrollHeight;
             }
+        }
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
         }
     </script>
 </body>
